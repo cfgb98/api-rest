@@ -131,3 +131,42 @@ cursor: pointer;
 		width: 80%;
 	}
 }
+
+#menu{
+	margin: auto;
+	width: 900px;
+	font-family: roboto;
+}
+
+ul{
+	list-style: none;
+}
+
+.nav li a{
+	background-color: #04B4AE;
+	color: #FFFFFF;
+	padding: 12px 22px;
+	display:block;
+	font-family: roboto;
+	text-decoration: none;
+}
+
+.nav li a:hover{
+	background-color: #6E6E6E;
+}
+
+.nav>li{
+	float: left;
+}
+
+/*Mostrar y ocultar menu*/
+
+.nav li ul{
+	display: none;
+	position: absolute;
+	min-width: 112px;
+}
+
+.nav li:hover>ul{
+	display: block;
+}
