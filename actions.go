@@ -155,7 +155,6 @@ func movieRemove(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404) //recurso no encontrado
 		return
 	}
-	//results := Message{"Success", "La película con ID" + movieID + " ha sido borrada correctamente"}
 	message := new(Message) // new retorna puntero a la estructura
 	message.setStatus("Success")
 	message.setMessage("La película con ID" + movieID + " ha sido borrada correctamente")
