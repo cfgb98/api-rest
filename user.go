@@ -1,6 +1,7 @@
 package main
 
+//User es el modelo de datos para los usuarios
 type User struct {
-	name     string `json:"name"`
-	password string `json:"password"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
