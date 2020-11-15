@@ -1,14 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux" //enrutador
-	"gopkg.in/mgo.v2"        //mongodb
-	"gopkg.in/mgo.v2/bson"   //bson formato en que se guardan los datos en mongodb
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/mux"     //enrutador
+	"golang.org/x/crypto/bcrypt" //encriptar contraseña
+	"gopkg.in/mgo.v2"            //mongodb
+	"gopkg.in/mgo.v2/bson"       //bson formato en que se guardan los datos en mongodb
 )
 
 //Message representa un mensaje de respuesta de la API
@@ -27,6 +30,8 @@ func (this *Message) setMessage(data string) {
 }
 
 var collection = getSession().DB("curso_go").C("movies") //.C es la colecccion, se cre sola la db, la coleccion
+var db *sql.DB
+var err error
 
 func getSession() *mgo.Session {
 	session, err := mgo.Dial("mongodb://localhost")
@@ -162,4 +167,52 @@ func movieRemove(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200) //200 estatus ok, sin errores
 	json.NewEncoder(w).Encode(results)
+}
+
+func userAdd(w http.ResponseWriter, r *http.Request) {
+	db, err = sql.Open("mysql", "root:Macr159ima@/bdgo") //"sgbd", "user:password@/bd"
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if r.Method != "POST" {
+		http.ServeFile(w, r, "public/RegistrarUsuario.html")
+		http.ServeFile(w, r, "public/estilos.css")
+		return
+	}
+	username := r.FormValue("username") //obtener usuario del formulario
+	password := r.FormValue("password") //obtener contraseña del formulario
+
+	var user string
+
+	err := db.QueryRow("SELECT username FROM users WHERE username=?", username).Scan(&user)
+	switch {
+	case err == sql.ErrNoRows:
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			http.Error(w, "Error en el servidor, no se ha podido crear tu cuenta.", 500)
+			return
+		}
+
+		_, err = db.Exec("INSERT INTO users(username, password) VALUES(?, ?)", username, hashedPassword)
+		if err != nil {
+			http.Error(w, "Error en el servidor, no se ha podido crear tu cuenta.", 500)
+			return
+		}
+
+		w.Write([]byte("Usuario creado"))
+		return
+	case err != nil:
+		http.Error(w, "Error en el servidor, no se ha podido crear tu cuenta.", 500)
+		return
+	default:
+		http.Redirect(w, r, "/", 301)
+	}
+
 }
