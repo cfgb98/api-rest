@@ -169,6 +169,7 @@ func movieRemove(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(results)
 }
 
+//agregar usuario en la base de datos
 func userAdd(w http.ResponseWriter, r *http.Request) {
 	db, err = sql.Open("mysql", "root:Macr159ima@/bdgo") //"sgbd", "user:password@/bd"
 	if err != nil {
