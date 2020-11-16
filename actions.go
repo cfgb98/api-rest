@@ -183,7 +183,6 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != "POST" {
 		http.ServeFile(w, r, "public/RegistrarUsuario.html")
-		//	http.ServeFile(w, r, "public/estilos.css")
 		return
 	}
 	username := r.FormValue("username") //obtener usuario del formulario
