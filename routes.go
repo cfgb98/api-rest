@@ -34,4 +34,5 @@ var routes = Routes{
 	Route{"movieUpdate", "PUT", "/pelicula/{id}", movieUpdate},
 	Route{"movieRemove", "DELETE", "/pelicula/{id}", movieRemove},
 	Route{"userAdd", "GET", "/signup", userAdd},
+	Route{"userAdd", "POST", "/signup", userAdd},
 }
