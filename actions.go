@@ -213,5 +213,44 @@ func userAdd(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Redirect(w, r, "/", 301)
 	}
+}
+
+//buscar usuario en la base de datos
+func userSearch(w http.ResponseWriter, r *http.Request) {
+	db, err = sql.Open("mysql", "root:Macr159ima@/bdgo") //"sgbd", "user:password@/bdgo"
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if r.Method != "POST" {
+		http.ServeFile(w, r, "public/login.html")
+		return
+	}
+	username := r.FormValue("username") //obtener usuario del formulario
+	password := r.FormValue("password") //obtener contraseña del formulario
+
+	var databaseUsername string
+	var databasePassword string
+
+	err := db.QueryRow("SELECT username, password FROM users WHERE username=?", username).Scan(&databaseUsername, &databasePassword)
+
+	if err != nil {
+		http.Redirect(w, r, "/login", 301)
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(databasePassword), []byte(password))
+	if err != nil {
+		http.Redirect(w, r, "/login", 301)
+		return
+	}
+
+	w.Write([]byte("Hello " + databaseUsername))
 
 }
